@@ -153,7 +153,9 @@ def quant_sequential(model, dataloader, dev):
         for name in gpts:
             handles.append(subset[name].register_forward_hook(add_batch(name)))
         for j in range(args.nsamples):
-            outs[j] = layer(inps[j].unsqueeze(0), attention_mask=attention_mask)[0]
+            data = inps[j].unsqueeze(0)
+            position_ids = torch.arange(data.shape[1], dtype=torch.long).unsqueeze(0).repeat(data.shape[0], 1).to(data.device)
+            outs[j] = layer(data, position_ids = position_ids)[0]
         for h in handles:
             h.remove()
 
@@ -168,7 +170,9 @@ def quant_sequential(model, dataloader, dev):
             plt_error.append(info["error"])
 
         for j in range(args.nsamples):
-            outs[j] = layer(inps[j].unsqueeze(0), attention_mask=attention_mask)[0]
+            data = inps[j].unsqueeze(0)
+            position_ids = torch.arange(data.shape[1], dtype=torch.long).unsqueeze(0).repeat(data.shape[0], 1).to(data.device)
+            outs[j] = layer(data, position_ids = position_ids)[0]
 
         layers[i] = layer.cpu()
         del layer
