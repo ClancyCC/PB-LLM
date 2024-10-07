@@ -132,10 +132,11 @@ class BinaryXnorExceptOutliersLinearHessian(BinaryXnorExceptOutliersLinear):
                 print(f"generating mask for {self.global_name}, please generate it first, use magnitude instead")
                 return super().gen_outlier_mask()
             mask = torch.load(
-                f"gptq_pb/outputs/mask/mask_{low_frac}_{self.global_name.replace('/','_')}.pkl"
+                f"gptq_pb/outputs/mask/mask_{low_frac}_{self.global_name.replace('/','_')}.pkl",
+                map_location = w.device
             )
 
-            self.outlier_mask = ~mask.to(w.device)
+            self.outlier_mask = ~mask
             print(
                 f"load mask, outlier_fraction: {self.outlier_mask.sum()}/{self.outlier_mask.numel()}({self.outlier_mask.sum()/self.outlier_mask.numel()})"
             )
